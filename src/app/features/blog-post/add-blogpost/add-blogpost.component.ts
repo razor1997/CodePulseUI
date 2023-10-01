@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
+import { Category } from '../../category/models/category.model';
+import { CategoryService } from '../../category/services/category.service';
 import { AddBlogPost } from '../models/add-blog-post.model';
 import { BlogPostService } from '../services/blog-post.service';
 
@@ -10,9 +13,11 @@ import { BlogPostService } from '../services/blog-post.service';
 })
 export class AddBlogpostComponent implements OnInit {
   model: AddBlogPost;
+  categories$?: Observable<Category[]>;
 
   constructor(private blogPostService: BlogPostService,
-    private router: Router) { 
+    private router: Router,
+    private categoryService: CategoryService) { 
     this.model = {
       title: "",
       shortDescription: "",
@@ -22,14 +27,17 @@ export class AddBlogpostComponent implements OnInit {
       author:  "",
       publishedDate: new Date(),
       isVisible: true,
+      categories: []
     }
 
   }
 
   ngOnInit(): void {
+    this.categories$ = this.categoryService.getAllCategories();
   }
   onFormSubmit(): void
   {
+    console.log(this.model);
     this.blogPostService.createBlogPost(this.model)
     .subscribe( {
       next: (response) => {
